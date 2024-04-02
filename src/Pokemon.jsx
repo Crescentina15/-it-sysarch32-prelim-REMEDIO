@@ -6,67 +6,35 @@ const Pokemon = ({ pokemonId }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchPokemonData = async () => {
+    const fetchData = async () => {
+      console.log('Fetching data...'); // Log before fetching
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch(`https://us-central1-it-sysarch32.cloudfunctions.net/pokemon/${pokemonId}`);
+        const response = await fetch(`https://us-central1-it-sysarch32.cloudfunctions.net/pagination?page=${pokemonId}`);
+        console.log('Response:', response); // Log the response object
         if (!response.ok) {
-          throw new Error(`Failed to fetch data for Pokemon ${pokemonId}`);
+          throw new Error('Failed to fetch data');
         }
         const jsonData = await response.json();
+        console.log('Fetched data:', jsonData); // Log fetched data
         setPokemonData(jsonData);
       } catch (error) {
+        console.error('Error fetching data:', error); // Log errors
         setError(error.message);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchPokemonData();
+    fetchData();
   }, [pokemonId]);
 
-  const renderTypes = () => {
-    if (!pokemonData) return null;
-    return pokemonData.type.map((type, index) => (
-      <span key={index}>{type}</span>
-    ));
-  };
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!pokemonData) return null;
 
-  const renderStats = () => {
-    if (!pokemonData) return null;
-    return Object.entries(pokemonData.base).map(([key, value]) => (
-      <div key={key}>
-        <strong>{key}: </strong>
-        {value}
-      </div>
-    ));
-  };
-
-  return (
-    <div>
-      {isLoading && <div>Loading...</div>}
-      {error && <div>Error: {error}</div>}
-      {pokemonData && (
-        <div>
-          <img src={pokemonData.image} alt={pokemonData.name} />
-          <h2>{pokemonData.name.english}</h2>
-          <div>
-            <strong>ID: </strong>
-            {pokemonData.id}
-          </div>
-          <div>
-            <strong>Type(s): </strong>
-            {renderTypes()}
-          </div>
-          <div>
-            <strong>Additional Info:</strong>
-            {renderStats()}
-          </div>
-        </div>
-      )}
-    </div>
-  );
+  // Render Pokemon data here
 };
 
 export default Pokemon;
