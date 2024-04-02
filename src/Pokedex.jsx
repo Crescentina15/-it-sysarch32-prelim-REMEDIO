@@ -1,27 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import Pokemon from './Pokemon';
 
-const Pokedex = () => {
+const Pokedex = ({ apiUrl }) => {
   const [selectedLanguage, setSelectedLanguage] = useState('english');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [pokemonData, setPokemonData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchPokemonData();
   }, [currentPage, selectedLanguage]);
 
   const fetchPokemonData = async () => {
+    setIsLoading(true);
+    setError(null);
     try {
-      const response = await fetch(`https://us-central1-it-sysarch32.cloudfunctions.net/pagination?page=${currentPage}`);
+      const response = await fetch(apiUrl);
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
       const jsonData = await response.json();
-      setPokemonData(jsonData.pokemon);
+      setPokemonData(jsonData.data);
       setTotalPages(jsonData.totalPages);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -65,12 +71,22 @@ const Pokedex = () => {
         <button onClick={() => handleLanguageChange('chinese')}>Chinese</button>
         <button onClick={() => handleLanguageChange('french')}>French</button>
       </div>
-      <Pokemon pokemonData={pokemonData} />
-      <div>
-        <button onClick={handlePrevPage} disabled={currentPage === 1}>Back</button>
-        {renderPaginationButtons()}
-        <button onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
-      </div>
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : error ? (
+        <div>Error: {error}</div>
+      ) : (
+        <>
+          {pokemonData.map((pokemon) => (
+            <Pokemon key={pokemon.id} pokemonId={pokemon.id} />
+          ))}
+          <div>
+            <button onClick={handlePrevPage} disabled={currentPage === 1}>Back</button>
+            {renderPaginationButtons()}
+            <button onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
+          </div>
+        </>
+      )}
     </div>
   );
 };
