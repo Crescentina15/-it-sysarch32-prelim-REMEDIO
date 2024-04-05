@@ -1,94 +1,71 @@
 import React, { useState, useEffect } from 'react';
 import Pokemon from './Pokemon';
 
-const Pokedex = ({ apiUrl }) => {
-  const [selectedLanguage, setSelectedLanguage] = useState('english');
+function Pokedex() {
+  const [pokemons] = useState([]);
+  const [language, setLanguage] = useState('english');
+  const [pokemonList, setPokemonList] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [pokemonData, setPokemonData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchPokemonData();
-  }, [currentPage, selectedLanguage]);
+    fetchData(currentPage);
+  }, [currentPage]);
 
-  const fetchPokemonData = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(apiUrl);
-      if (!response.ok) {
-        throw new Error('Failed to fetch data');
-      }
-      const jsonData = await response.json();
-      setPokemonData(jsonData.data);
-      setTotalPages(jsonData.totalPages);
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleLanguageChange = (language) => {
-    setSelectedLanguage(language);
-  };
-
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
+  const fetchData = async (page) => {
+    setLoading(true);
+    const response = await fetch(`https://us-central1-it-sysarch32.cloudfunctions.net/pagination?page=${page}`);
+    const data = await response.json();
+    setPokemonList(data.data);
+    setTotalPages(data.totalPages);
+    setLoading(false);
   };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
-  const renderPaginationButtons = () => {
-    const buttons = [];
-    for (let i = 1; i <= totalPages; i++) {
-      buttons.push(
-        <button key={i} onClick={() => handlePageChange(i)} disabled={i === currentPage}>
-          {i}
-        </button>
-      );
-    }
-    return buttons;
+  const handleLanguageChange = (selectedLanguage) => {
+    setLanguage(selectedLanguage);
   };
 
   return (
     <div>
-      <div>
+      <div className="language-buttons">
         <button onClick={() => handleLanguageChange('english')}>English</button>
         <button onClick={() => handleLanguageChange('japanese')}>Japanese</button>
         <button onClick={() => handleLanguageChange('chinese')}>Chinese</button>
         <button onClick={() => handleLanguageChange('french')}>French</button>
       </div>
-      {isLoading ? (
-        <div>Loading...</div>
-      ) : error ? (
-        <div>Error: {error}</div>
+      <div className="pokedex"></div>
+      <div className="pagination">
+        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+          Back
+        </button>
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+          <button key={page} onClick={() => handlePageChange(page)}>
+            {page}
+          </button>
+        ))}
+        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+          Next
+        </button>
+      </div>
+      {loading ? (
+        <p>Loading...</p>
       ) : (
-        <>
-          {pokemonData.map((pokemon) => (
-            <Pokemon key={pokemon.id} pokemonId={pokemon.id} />
+        <div className="pokemon-container">
+          {pokemonList.map((pokemon) => (
+            <Pokemon key={pokemon.id} pokemon={pokemon} language={language} />
           ))}
-          <div>
-            <button onClick={handlePrevPage} disabled={currentPage === 1}>Back</button>
-            {renderPaginationButtons()}
-            <button onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
-          </div>
-        </>
+        </div>
       )}
+      <div className="page-info">
+        <p>Page {currentPage} of {totalPages}</p>
+      </div>
     </div>
   );
-};
+}
 
 export default Pokedex;

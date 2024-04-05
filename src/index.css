@@ -2,7 +2,6 @@ header{
   text-align: center;
   font-size: 30px;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
-  margin-top: auto;
 }
 body {
   margin: 20px;
@@ -11,4 +10,119 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background-color: antiquewhite;
+}
+
+.pokemon {
+  width: 300px; 
+  padding: 50px; 
+  border: 1px solid #000000; 
+  margin-right: 30px;
+  margin-bottom: 30px;
+  margin-top: 30px;
+  margin-left: 53px;
+  text-align: center; 
+  list-style-type: lower-latin;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+  background-color: beige;
+  transition: transform 0.3s; 
+  cursor: pointer;  
+  
+}
+
+.pokemon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.image-container {
+  width: 100px; /* Adjust the width as needed */
+  height: 100px; /* Adjust the height as needed */
+}
+
+.pokemon-image {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.details {
+  margin-top: 10px; /* Adjust margin as needed */
+  text-align: center;
+}
+
+.details > div {
+  margin-bottom: 5px; /* Adjust margin as needed */
+}
+
+.pokemon-container{
+text-align: center;
+font-family: fantasy;
+  list-style: none; 
+  padding-left: 10; 
+  text-align: justify;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); 
+  grid-template-rows: repeat(5, auto); 
+  gap: 10px
+}
+
+.type-section{
+  text-align: center;
+  font-family: fantasy;
+  margin-bottom: 5px;
+  background-color: rgb(241, 239, 159);
+}
+
+.type-section-container {
+  display: flex;
+  flex-wrap: wrap; 
+  
+}
+
+.type {
+  margin-right: 20px; /* Add some space between types */
+
+}
+
+
+.language-buttons {
+  align-content: left;
+  display: flex; 
+  border-color: #000000;
+}
+
+.language-buttons button {
+  padding: 15px 35px;
+  align-items: left;
+  border: 100px;
+  background-color: bisque;
+  cursor: pointer; /* Change cursor on hover */
+  transition: background-color 0.3s;
+}
+.pokedex {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.language-buttons,
+.pokemon-list {
+  display: flex;
+  flex-wrap: wrap; 
+  justify-content: left; 
+}
+
+
+.language-buttons button {
+  margin: 10px; 
+}
+
+.pagination{
+  padding: 15px 35px;
+  align-items: left;
+  border: 100px;
+  background-color: bisque;
+  cursor: pointer; /* Change cursor on hover */
+  transition: background-color 0.3s;
 }
